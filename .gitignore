@@ -140,3 +140,4 @@ bot-script-config.json
 src/main/webapp/META-INF/context.xml
 *.mp4
 *.gif
+!libs/*
