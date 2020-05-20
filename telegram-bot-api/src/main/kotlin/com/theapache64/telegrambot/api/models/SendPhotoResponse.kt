@@ -23,24 +23,24 @@ data class SendPhotoResponse(
     ) {
         data class Chat(
                 @Json(name = "first_name")
-                val firstName: String, // theapache64
+                val firstName: String?, // theapache64
                 @Json(name = "id")
                 val id: Int, // 240810054
                 @Json(name = "type")
                 val type: String, // private
                 @Json(name = "username")
-                val username: String // theapache64
+                val username: String?// theapache64
         )
 
         data class From(
                 @Json(name = "first_name")
-                val firstName: String, // CoDoc19Dev
+                val firstName: String?, // CoDoc19Dev
                 @Json(name = "id")
                 val id: Int, // 1028883028
                 @Json(name = "is_bot")
                 val isBot: Boolean, // true
                 @Json(name = "username")
-                val username: String // CoDoc19DevBot
+                val username: String?// CoDoc19DevBot
         )
 
         data class Photo(

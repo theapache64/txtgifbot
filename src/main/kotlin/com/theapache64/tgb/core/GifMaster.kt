@@ -27,7 +27,7 @@ object GifMaster {
 
         SimpleCommandExecutor.executeCommand(
                 command,
-                isLivePrint = true,
+                isLivePrint = false,
                 isSuppressError = true,
                 isReturnAll = false
         )
@@ -43,7 +43,7 @@ object GifMaster {
 
             SimpleCommandExecutor.executeCommand(
                     gifCommand,
-                    isLivePrint = true,
+                    isLivePrint = false,
                     isSuppressError = true,
                     isReturnAll = false
             )

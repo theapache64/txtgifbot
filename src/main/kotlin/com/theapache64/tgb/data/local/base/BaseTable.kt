@@ -54,7 +54,7 @@ open class BaseTable<T>(val tableName: String) {
     }
 
     @Throws(SQLException::class, QueryBuilderException::class)
-    fun update(t: T): Boolean {
+    open fun update(t: T): Boolean {
         throw IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD)
     }
 

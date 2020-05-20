@@ -3,6 +3,7 @@ package com.theapache64.tgb.data.local
 import com.theapache64.tgb.data.local.base.AddQueryBuilder
 import com.theapache64.tgb.data.local.base.BaseTable
 import com.theapache64.tgb.data.local.base.SelectQueryBuilder
+import com.theapache64.tgb.data.local.base.UpdateQueryBuilder
 import com.theapache64.tgb.models.Hit
 import org.omg.PortableInterceptor.SUCCESSFUL
 import javax.inject.Inject
@@ -39,6 +40,7 @@ class HitsRepo @Inject constructor() : BaseTable<Hit>("hits") {
 
     override fun getItem(column: String, value: String): Hit? {
         return SelectQueryBuilder.Builder<Hit>(tableName) {
+
             Hit(
                     it.getLong(COLUMN_ID),
                     it.getString(COLUMN_USER),
@@ -51,6 +53,7 @@ class HitsRepo @Inject constructor() : BaseTable<Hit>("hits") {
                     it.getString(COLUMN_CREATED_AT),
                     it.getString(COLUMN_UPDATED_AT)
             )
+
         }.select(arrayOf(
                 COLUMN_ID,
                 COLUMN_USER,
@@ -63,5 +66,14 @@ class HitsRepo @Inject constructor() : BaseTable<Hit>("hits") {
                 COLUMN_CREATED_AT,
                 COLUMN_UPDATED_AT
         )).where(column, value).build().get()
+    }
+
+    override fun update(t: Hit): Boolean {
+        return UpdateQueryBuilder.Builder(tableName)
+                .set(COLUMN_TEXT, t.text)
+                .set(COLUMN_IS_SUCCESS, t.isSuccess ?: false)
+                .where(COLUMN_ID, t.id.toString())
+                .build()
+                .done()
     }
 }

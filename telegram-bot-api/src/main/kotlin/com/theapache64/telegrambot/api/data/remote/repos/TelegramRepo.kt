@@ -10,6 +10,9 @@ import com.theapache64.telegrambot.api.utils.StringUtils
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -37,25 +40,32 @@ class TelegramRepo @Inject constructor(
 
 
     suspend fun sendMessage(sendMessageRequest: SendMessageRequest): SendMessageResponse {
-        println("Sending message using Telegram API : $accessToken")
         return telegramApi.sendMessage(
                 accessToken,
                 sendMessageRequest
         )
     }
 
-    suspend fun sendChatAction(request: SendChatActionRequest): SendChatActionResponse {
+    fun sendChatAction(request: SendChatActionRequest): SendChatActionResponse {
         return telegramApi.sendChatAction(
                 accessToken,
                 request
-        )
+        ).execute().body()!!
     }
 
-    suspend fun sendChatActionAsync(request: SendChatActionRequest): SendChatActionResponse {
-        return telegramApi.sendChatAction(
+    fun sendChatActionAsync(request: SendChatActionRequest) {
+        telegramApi.sendChatAction(
                 accessToken,
                 request
-        )
+        ).enqueue(object : Callback<SendChatActionResponse> {
+            override fun onFailure(call: Call<SendChatActionResponse>, t: Throwable) {
+                println("Sending chat action failed")
+            }
+
+            override fun onResponse(call: Call<SendChatActionResponse>, response: Response<SendChatActionResponse>) {
+                println("Sending chat action success")
+            }
+        })
     }
 
     suspend fun answerCallbackQuery(request: AnswerCallbackRequest): Any {
@@ -75,6 +85,18 @@ class TelegramRepo @Inject constructor(
                 accessToken,
                 chatIdPart,
                 captionPart,
+                photoPart
+        )
+    }
+
+    suspend fun sendAnimation(chatId: Long, file: File): Any {
+        val mediaType = MediaType.parse("multipart/form-data")
+        val requestFile = RequestBody.create(mediaType, file)
+        val photoPart = MultipartBody.Part.createFormData("animation", file.name, requestFile)
+        val chatIdPart = RequestBody.create(mediaType, chatId.toString())
+        return telegramApi.sendAnimationFile(
+                accessToken,
+                chatIdPart,
                 photoPart
         )
     }

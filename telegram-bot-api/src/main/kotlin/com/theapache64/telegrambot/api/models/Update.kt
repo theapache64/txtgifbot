@@ -72,18 +72,18 @@ data class Update(
 
             data class Chat(
                     @Json(name = "first_name")
-                    val firstName: String, // theapache64
+                    val firstName: String?, // theapache64
                     @Json(name = "id")
                     val id: Int, // 240810054
                     @Json(name = "type")
                     val type: String, // private
                     @Json(name = "username")
-                    val username: String // theapache64
+                    val username: String? // theapache64
             )
 
             data class From(
                     @Json(name = "first_name")
-                    val firstName: String, // theapache64
+                    val firstName: String?, // theapache64
                     @Json(name = "id")
                     val id: Int, // 240810054
                     @Json(name = "is_bot")
@@ -91,7 +91,7 @@ data class Update(
                     @Json(name = "language_code")
                     val languageCode: String?, // en
                     @Json(name = "username")
-                    val username: String // theapache64
+                    val username: String? // theapache64
             )
         }
 
@@ -131,13 +131,14 @@ data class Update(
 
         data class Chat(
                 @Json(name = "first_name")
-                val firstName: String, // theapache64
+                val firstName: String?
+                , // theapache64
                 @Json(name = "id")
                 val id: Long, // 240810054
                 @Json(name = "type")
                 val type: String, // private
                 @Json(name = "username")
-                val username: String // theapache64
+                val username: String? // theapache64
         )
 
         data class From(

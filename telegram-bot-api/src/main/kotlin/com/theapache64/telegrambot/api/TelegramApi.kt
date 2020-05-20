@@ -13,7 +13,7 @@ interface TelegramApi {
     suspend fun sendMessage(@Path("from") from: String, @Body sendMessageRequest: SendMessageRequest): SendMessageResponse
 
     @POST("/bot{from}/sendChatAction")
-    suspend fun sendChatAction(@Path("from") from: String, @Body sendMessageRequest: SendChatActionRequest): SendChatActionResponse
+    fun sendChatAction(@Path("from") from: String, @Body sendMessageRequest: SendChatActionRequest): Call<SendChatActionResponse>
 
     @POST("/bot{from}/answerCallbackQuery")
     suspend fun answerCallbackQuery(@Path("from") from: String, @Body answerCallbackRequest: AnswerCallbackRequest): Any
@@ -26,6 +26,14 @@ interface TelegramApi {
             @Part("caption") caption: RequestBody,
             @Part photo: MultipartBody.Part
     ): SendPhotoResponse
+
+    @Multipart
+    @POST("/bot{from}/sendAnimation")
+    suspend fun sendAnimationFile(
+            @Path("from") from: String,
+            @Part("chat_id") chatId: RequestBody,
+            @Part animation: MultipartBody.Part
+    ): Any
 
     @POST("/bot{from}/sendPhoto")
     suspend fun sendPhoto(

@@ -23,7 +23,7 @@ data class CallbackQueryResponse(
     ) {
         data class From(
                 @Json(name = "first_name")
-                val firstName: String, // theapache64
+                val firstName: String?, // theapache64
                 @Json(name = "id")
                 val id: Int, // 240810054
                 @Json(name = "is_bot")
@@ -31,7 +31,7 @@ data class CallbackQueryResponse(
                 @Json(name = "language_code")
                 val languageCode: String, // en
                 @Json(name = "username")
-                val username: String // theapache64
+                val username: String?// theapache64
         )
 
         data class Message(
@@ -50,24 +50,24 @@ data class CallbackQueryResponse(
         ) {
             data class Chat(
                     @Json(name = "first_name")
-                    val firstName: String, // theapache64
+                    val firstName: String?, // theapache64
                     @Json(name = "id")
                     val id: Long, // 240810054
                     @Json(name = "type")
                     val type: String, // private
                     @Json(name = "username")
-                    val username: String // theapache64
+                    val username: String?// theapache64
             )
 
             data class From(
                     @Json(name = "first_name")
-                    val firstName: String, // Corona Scholar - Dev
+                    val firstName: String?, // Corona Scholar - Dev
                     @Json(name = "id")
                     val id: Int, // 1119620721
                     @Json(name = "is_bot")
                     val isBot: Boolean, // true
                     @Json(name = "username")
-                    val username: String // corona_scholar_dev_bot
+                    val username: String?// corona_scholar_dev_bot
             )
 
             data class ReplyMarkup(

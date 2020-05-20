@@ -4,7 +4,9 @@ import com.theapache64.cyclone.core.base.BaseViewModel
 import com.theapache64.cyclone.core.livedata.LiveData
 import com.theapache64.cyclone.core.livedata.MutableLiveData
 import com.theapache64.telegrambot.api.data.remote.repos.TelegramRepo
+import com.theapache64.telegrambot.api.models.SendChatActionRequest
 import com.theapache64.telegrambot.api.models.SendMessageRequest
+import com.theapache64.telegrambot.api.models.SendPhotoRequest
 import com.theapache64.telegrambot.api.models.Update
 import com.theapache64.tgb.data.local.HitsRepo
 import com.theapache64.tgb.models.Hit
@@ -58,11 +60,10 @@ class TgbViewModel @Inject constructor(
                             return@let
                         }
 
-
                         println("It's the text to write on top of GIF : $text")
 
                         val replyMsgId = update.message.replyToMessage!!.messageId
-                        val hit = hitsRepo.getByMessageId(replyMsgId)
+                        var hit = hitsRepo.getByMessageId(replyMsgId)
 
                         if (hit == null) {
                             sendInvalidRequest(update, """
@@ -81,6 +82,12 @@ class TgbViewModel @Inject constructor(
                         }
 
 
+                        val chatId = update.message.chat.id
+                        telegramRepo.sendChatActionAsync(SendChatActionRequest(
+                                TelegramRepo.CHAT_ACTION_SENDING_PHOTO,
+                                chatId
+                        ))
+
                         val newMp4File = GifMaster.draw(text, gifFile, false)
                         gifFile.delete()
                         if (newMp4File == null) {
@@ -88,10 +95,32 @@ class TgbViewModel @Inject constructor(
                                 Sorry. We couldn't process that. 
                                 <a href="https://github.com/theapache64/txtgifbot/issues/new">Please report it here</a>
                             """.trimIndent())
-                            return@let
-                        }
-                        println("output: file://${newMp4File.absolutePath}")
+                            // Updating DB
+                            hit = hit.apply {
+                                this.text = text
+                                this.isSuccess = false
+                            }
 
+                        } else {
+                            println("output: file://${newMp4File.absolutePath}")
+
+                            // Updating DB
+                            hit = hit.apply {
+                                this.text = text
+                                this.isSuccess = true
+                            }
+
+                            // Sending result
+                            telegramRepo.sendAnimation(
+                                    chatId,
+                                    newMp4File
+                            )
+
+                            newMp4File.delete()
+                        }
+
+                        hitsRepo.update(hit)
+                        return@let
                     }
 
                     else -> {
@@ -156,7 +185,7 @@ class TgbViewModel @Inject constructor(
 
     private suspend fun sendInvalidRequest(
             update: Update,
-            message: String = "Ahhm.. That's an invalid query."
+            message: String = "What? I don't know about that. Send me a GIF!!!"
     ) {
         telegramRepo.sendMessage(
                 SendMessageRequest(

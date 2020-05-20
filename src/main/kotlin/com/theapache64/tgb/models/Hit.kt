@@ -7,8 +7,8 @@ class Hit(
         val fileId: String,
         val width: Int,
         val height: Int,
-        val text: String?,
-        val isSuccess: Boolean?,
+        var text: String?,
+        var isSuccess: Boolean?,
         val createdAt: String?,
         val updatedAt: String?
 )
