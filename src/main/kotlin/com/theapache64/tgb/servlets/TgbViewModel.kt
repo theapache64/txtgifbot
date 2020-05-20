@@ -20,10 +20,10 @@ class TgbViewModel @Inject constructor(
 
     companion object {
         private val GIF_COMPLEMENTS = listOf<String>(
-                "Awesome GIF!",
-                "Haha, that's cool",
-                "Okay nice",
-                "Haha, cool"
+                "🤘🏻 Awesome GIF!",
+                "😂 Haha, that's cool",
+                "😹 Okay nice",
+                "😎 Haha, cool"
         )
     }
 
@@ -63,7 +63,7 @@ class TgbViewModel @Inject constructor(
                         // Blank check
                         if (text.isEmpty()) {
                             sendInvalidRequest(update, """
-                                Are you kidding me?
+                                🤨 Are you kidding me?
                             """.trimIndent())
                             return@let
                         }
@@ -75,7 +75,7 @@ class TgbViewModel @Inject constructor(
 
                         if (hit == null) {
                             sendInvalidRequest(update, """
-                                Sorry, we couldn't find your GIF in our database!.Please try again.
+                               🤒 Sorry, we couldn't find your GIF in our database!.Please try again.
                             """.trimIndent())
                             return@let
                         }
@@ -92,7 +92,7 @@ class TgbViewModel @Inject constructor(
 
                         if (gifFile == null) {
                             sendInvalidRequest(update, """
-                                Sorry, we couldn't find your GIF in Telegram database.Please try again.
+                               🤒 Sorry, we couldn't find your GIF in Telegram database.Please try again.
                             """.trimIndent())
                             return@let
                         }
@@ -102,7 +102,7 @@ class TgbViewModel @Inject constructor(
                         gifFile.delete()
                         if (newMp4File == null) {
                             sendInvalidRequest(update, """
-                                Sorry. We couldn't process that. 
+                               🤒 Sorry. We couldn't process that. 
                                 <a href="https://github.com/theapache64/txtgifbot/issues/new">Please report it here</a>
                             """.trimIndent())
                             // Updating DB
@@ -197,7 +197,7 @@ class TgbViewModel @Inject constructor(
 
     private suspend fun sendInvalidRequest(
             update: Update,
-            message: String = "What? I don't know about that. Send me a GIF!!!"
+            message: String = "🤷‍♂️ What? I don't know about that. Send me a GIF!!!"
     ) {
         telegramRepo.sendMessage(
                 SendMessageRequest(
