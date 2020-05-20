@@ -18,6 +18,14 @@ class TgbViewModel @Inject constructor(
         private val hitsRepo: HitsRepo
 ) : BaseViewModel<TgbServlet>() {
 
+    companion object {
+        private val GIF_COMPLEMENTS = listOf<String>(
+                "Awesome GIF!",
+                "Haha, that's cool",
+                "Okay nice",
+                "Haha, cool"
+        )
+    }
 
     private val _response = MutableLiveData<String>()
     val response: LiveData<String> = _response
@@ -72,6 +80,14 @@ class TgbViewModel @Inject constructor(
                             return@let
                         }
 
+                        val chatId = update.message.chat.id
+                        val resp = telegramRepo.sendChatAction(SendChatActionRequest(
+                                TelegramRepo.CHAT_ACTION_SENDING_DOCUMENT,
+                                chatId
+                        ))
+
+                        println("Sending file sent! $resp")
+
                         val gifFile = telegramRepo.downloadGif(hit.fileId)
 
                         if (gifFile == null) {
@@ -81,12 +97,6 @@ class TgbViewModel @Inject constructor(
                             return@let
                         }
 
-
-                        val chatId = update.message.chat.id
-                        telegramRepo.sendChatActionAsync(SendChatActionRequest(
-                                TelegramRepo.CHAT_ACTION_SENDING_PHOTO,
-                                chatId
-                        ))
 
                         val newMp4File = GifMaster.draw(text, gifFile, false)
                         gifFile.delete()
@@ -144,7 +154,7 @@ class TgbViewModel @Inject constructor(
         val askMsg = telegramRepo.sendMessage(
                 SendMessageRequest(
                         update.message.chat.id,
-                        "Awesome GIF! Now tell me what do you want to write on it!",
+                        "${getRandomGifComplement()}. Now tell me what do you want to write on it!",
                         replyMsgId = update.message.messageId,
                         replyMarkup = SendMessageRequest.ReplyMarkup(
                                 isForceReply = true
@@ -182,6 +192,8 @@ class TgbViewModel @Inject constructor(
             _response.value = "Failed to add hit to db"
         }
     }
+
+    private fun getRandomGifComplement(): String = GIF_COMPLEMENTS.random()
 
     private suspend fun sendInvalidRequest(
             update: Update,

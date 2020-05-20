@@ -28,6 +28,7 @@ class TelegramRepo @Inject constructor(
         // Chat actions
         const val CHAT_ACTION_TYPING = "typing"
         const val CHAT_ACTION_SENDING_PHOTO = "upload_photo"
+        const val CHAT_ACTION_SENDING_DOCUMENT = "upload_document"
     }
 
     private val updateAdapter: JsonAdapter<Update> by lazy {
@@ -46,26 +47,11 @@ class TelegramRepo @Inject constructor(
         )
     }
 
-    fun sendChatAction(request: SendChatActionRequest): SendChatActionResponse {
+    suspend fun sendChatAction(request: SendChatActionRequest): SendChatActionResponse {
         return telegramApi.sendChatAction(
                 accessToken,
                 request
-        ).execute().body()!!
-    }
-
-    fun sendChatActionAsync(request: SendChatActionRequest) {
-        telegramApi.sendChatAction(
-                accessToken,
-                request
-        ).enqueue(object : Callback<SendChatActionResponse> {
-            override fun onFailure(call: Call<SendChatActionResponse>, t: Throwable) {
-                println("Sending chat action failed")
-            }
-
-            override fun onResponse(call: Call<SendChatActionResponse>, response: Response<SendChatActionResponse>) {
-                println("Sending chat action success")
-            }
-        })
+        )
     }
 
     suspend fun answerCallbackQuery(request: AnswerCallbackRequest): Any {

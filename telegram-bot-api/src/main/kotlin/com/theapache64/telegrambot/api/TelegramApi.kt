@@ -13,7 +13,7 @@ interface TelegramApi {
     suspend fun sendMessage(@Path("from") from: String, @Body sendMessageRequest: SendMessageRequest): SendMessageResponse
 
     @POST("/bot{from}/sendChatAction")
-    fun sendChatAction(@Path("from") from: String, @Body sendMessageRequest: SendChatActionRequest): Call<SendChatActionResponse>
+    suspend fun sendChatAction(@Path("from") from: String, @Body sendMessageRequest: SendChatActionRequest): SendChatActionResponse
 
     @POST("/bot{from}/answerCallbackQuery")
     suspend fun answerCallbackQuery(@Path("from") from: String, @Body answerCallbackRequest: AnswerCallbackRequest): Any
