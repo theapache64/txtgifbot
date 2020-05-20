@@ -1,20 +1,24 @@
 package com.theapache64.tgb.servlets
 
+import com.squareup.moshi.Moshi
 import com.theapache64.cyclone.core.base.BaseViewModel
 import com.theapache64.cyclone.core.livedata.LiveData
 import com.theapache64.cyclone.core.livedata.MutableLiveData
 import com.theapache64.telegrambot.api.data.remote.repos.TelegramRepo
+import com.theapache64.telegrambot.api.models.SendAnimationRequest
 import com.theapache64.telegrambot.api.models.SendChatActionRequest
 import com.theapache64.telegrambot.api.models.SendMessageRequest
 import com.theapache64.telegrambot.api.models.Update
 import com.theapache64.tgb.data.local.HitsRepo
 import com.theapache64.tgb.models.Hit
 import com.theapache64.tgb.core.GifMaster
+import com.theapache64.tgb.utils.SecretConstants
 import javax.inject.Inject
 
 class TgbViewModel @Inject constructor(
         private val telegramRepo: TelegramRepo,
-        private val hitsRepo: HitsRepo
+        private val hitsRepo: HitsRepo,
+        private val moshi: Moshi
 ) : BaseViewModel<TgbServlet>() {
 
     companion object {
@@ -122,9 +126,18 @@ class TgbViewModel @Inject constructor(
                             }
 
                             // Sending result
-                            telegramRepo.sendAnimation(
+                            val sendResult = telegramRepo.sendAnimation(
                                     chatId,
                                     newMp4File
+                            )
+
+                            // Statistics
+                            telegramRepo.sendAnimation(
+                                    SendAnimationRequest(
+                                            sendResult.result.document.fileId,
+                                            "@${hit.user} just created a GIF!",
+                                            SecretConstants.STATS_GROUP
+                                    )
                             )
 
                             newMp4File.delete()

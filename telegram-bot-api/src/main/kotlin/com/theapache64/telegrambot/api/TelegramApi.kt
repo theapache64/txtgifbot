@@ -20,6 +20,12 @@ interface TelegramApi {
             @Path("from") from: String,
             @Part("chat_id") chatId: RequestBody,
             @Part animation: MultipartBody.Part
+    ): SendAnimationResponse
+
+    @POST("/bot{from}/sendAnimation")
+    suspend fun sendAnimationFile(
+            @Path("from") from: String,
+            @Body sendAnimationRequest: SendAnimationRequest
     ): Any
 
     @GET("/bot{from}/getFile")

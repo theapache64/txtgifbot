@@ -50,7 +50,7 @@ class TelegramRepo @Inject constructor(
     }
 
 
-    suspend fun sendAnimation(chatId: Long, file: File): Any {
+    suspend fun sendAnimation(chatId: Long, file: File): SendAnimationResponse {
         val mediaType = MediaType.parse("multipart/form-data")
         val requestFile = RequestBody.create(mediaType, file)
         val photoPart = MultipartBody.Part.createFormData("animation", file.name, requestFile)
@@ -61,6 +61,14 @@ class TelegramRepo @Inject constructor(
                 photoPart
         )
     }
+
+    suspend fun sendAnimation(request: SendAnimationRequest): Any {
+        return telegramApi.sendAnimationFile(
+                accessToken,
+                request
+        )
+    }
+
 
     fun downloadGif(fileId: String): File? {
 
