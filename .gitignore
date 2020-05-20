@@ -141,3 +141,6 @@ src/main/webapp/META-INF/context.xml
 *.mp4
 *.gif
 !libs/*
+!src/test/resources/bow.srt
+!src/test/resources/bow.mp4
+!src/test/resources/bow_small.mp4

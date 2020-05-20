@@ -16,9 +16,6 @@ class TgbViewModel @Inject constructor(
         private val hitsRepo: HitsRepo
 ) : BaseViewModel<TgbServlet>() {
 
-    companion object {
-        private const val MAX_TEXT_LENGTH = 17
-    }
 
     private val _response = MutableLiveData<String>()
     val response: LiveData<String> = _response
@@ -53,7 +50,7 @@ class TgbViewModel @Inject constructor(
                         // It's the text to write on top of gif
                         val text = update.message.text!!.trim()
 
-                        // Black check
+                        // Blank check
                         if (text.isEmpty()) {
                             sendInvalidRequest(update, """
                                 Are you kidding me?
@@ -61,23 +58,6 @@ class TgbViewModel @Inject constructor(
                             return@let
                         }
 
-                        // Length check
-                        if (text.length > MAX_TEXT_LENGTH) {
-                            sendInvalidRequest(update, """
-                                Sorry, I can't handle more than $MAX_TEXT_LENGTH chars.
-                                May be you should <a href="https://github.com/theapache64/txtgifbot/issues/2"> vote for it</a>
-                            """.trimIndent())
-                            return@let
-                        }
-
-                        // Multiline check
-                        if (text.contains("\n")) {
-                            sendInvalidRequest(update, """
-                                Sorry, I can't handle multiline.
-                                May be you should <a href="https://github.com/theapache64/txtgifbot/issues/1"> vote for it</a>
-                            """.trimIndent())
-                            return@let
-                        }
 
                         println("It's the text to write on top of GIF : $text")
 
@@ -101,7 +81,7 @@ class TgbViewModel @Inject constructor(
                         }
 
 
-                        val newMp4File = GifMaster.draw(text, hit.width, hit.height, gifFile, false)
+                        val newMp4File = GifMaster.draw(text, gifFile, false)
                         gifFile.delete()
                         if (newMp4File == null) {
                             sendInvalidRequest(update, """

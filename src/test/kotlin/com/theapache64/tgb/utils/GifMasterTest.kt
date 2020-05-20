@@ -21,7 +21,7 @@ class GifMasterTest {
         val gifFilePaths = mutableListOf<String>()
 
         for (text in texts) {
-            val newFile = GifMaster.draw(text, 480, 376, bowMp4File, true)
+            val newFile = GifMaster.draw(text, bowMp4File, true)
             gifFilePaths.add("""
                 <img src="${newFile!!.absolutePath}.gif"/>
             """.trimIndent())
@@ -29,7 +29,7 @@ class GifMasterTest {
 
         gifFilePaths.add("<br/>")
         for (text in texts) {
-            val newFile = GifMaster.draw(text, 240, 188, bowSmallMp4File, true)
+            val newFile = GifMaster.draw(text, bowSmallMp4File, true)
             gifFilePaths.add("""
                 <img src="${newFile!!.absolutePath}.gif"/>
             """.trimIndent())
