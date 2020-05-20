@@ -1,0 +1,37 @@
+{
+  "update_id": 511906534,
+  "message": {
+    "message_id": 6,
+    "from": {
+      "id": 240810054,
+      "is_bot": false,
+      "first_name": "theapache64",
+      "username": "theapache64",
+      "language_code": "en"
+    },
+    "chat": {
+      "id": 240810054,
+      "first_name": "theapache64",
+      "username": "theapache64",
+      "type": "private"
+    },
+    "date": 1589815495,
+    "animation": {
+      "file_name": "giphy.mp4",
+      "mime_type": "video/mp4",
+      "duration": 2,
+      "width": 480,
+      "height": 376,
+      "thumb": {
+        "file_id": "AAMCBAADGQEAAwZewqjH0h_RtyIF61bgNDW8gPUIPgACJwIAAsL5BFLXyHW1hxNjx_A0PBsABAEAB20AA28bAAIZBA",
+        "file_unique_id": "AQAD8DQ8GwAEbxsAAg",
+        "file_size": 19796,
+        "width": 320,
+        "height": 251
+      },
+      "file_id": "CgACAgQAAxkBAAMGXsKox9If0bciBetW4DQ1vID1CD4AAicCAALC-QRS18h1tYcTY8cZBA",
+      "file_unique_id": "AgADJwIAAsL5BFI",
+      "file_size": 751820
+    }
+  }
+}

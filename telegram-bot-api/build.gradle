@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+apply plugin: 'kotlin-kapt'
+
+group 'com.theapache64'
+version 'v1.0.0-alpha01'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+	// Retrofit:Retrofit
+	api 'com.squareup.retrofit2:retrofit:2.8.1'
+
+	// Converter: Moshi:Converter: Moshi
+	implementation 'com.squareup.retrofit2:converter-moshi:2.8.1'
+
+    // Moshi Kotlin:Moshi Kotlin
+    implementation 'com.squareup.moshi:moshi-kotlin:1.9.2'
+
+	// Dagger:A fast dependency injector for Android and Java.
+	implementation 'com.google.dagger:dagger:2.27'
+
+	// Dagger Compiler:A fast dependency injector for Android and Java.
+	kapt 'com.google.dagger:dagger-compiler:2.27'
+}

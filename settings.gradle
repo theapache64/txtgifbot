@@ -1,0 +1,3 @@
+rootProject.name = 'txtgifbot'
+include 'telegram-bot-api'
+
