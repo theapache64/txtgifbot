@@ -1,4 +1,4 @@
-package com.theapache64.tgb.utils
+package com.theapache64.telegrambot.api.utils
 
 object StringUtils {
 

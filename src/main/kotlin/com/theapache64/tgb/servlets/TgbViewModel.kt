@@ -8,13 +8,17 @@ import com.theapache64.telegrambot.api.models.SendMessageRequest
 import com.theapache64.telegrambot.api.models.Update
 import com.theapache64.tgb.data.local.HitsRepo
 import com.theapache64.tgb.models.Hit
-import com.theapache64.tgb.utils.FfmpegUtils
+import com.theapache64.tgb.core.GifMaster
 import javax.inject.Inject
 
 class TgbViewModel @Inject constructor(
         private val telegramRepo: TelegramRepo,
         private val hitsRepo: HitsRepo
 ) : BaseViewModel<TgbServlet>() {
+
+    companion object {
+        private const val MAX_TEXT_LENGTH = 17
+    }
 
     private val _response = MutableLiveData<String>()
     val response: LiveData<String> = _response
@@ -45,31 +49,69 @@ class TgbViewModel @Inject constructor(
                     }
 
                     update.message.text != null && update.message.replyToMessage != null -> {
+
                         // It's the text to write on top of gif
-                        val text = update.message.text
-                        if (!text.isNullOrBlank()) {
-                            println("It's the text to write on top of GIF : $text")
-                            val replyMsgId = update.message.replyToMessage!!.messageId
-                            val hit = hitsRepo.getByMessageId(replyMsgId)
-                            if (hit != null) {
-                                val gifFile = telegramRepo.downloadGif(hit.fileId)
-                                if (gifFile != null) {
-                                    val newMp4File = FfmpegUtils.draw(text, hit.width, hit.height, gifFile, false)
-                                } else {
-                                    sendInvalidRequest(update, """
-                                Sorry, we couldn't find your GIF in Telegram database.Please try again.
+                        val text = update.message.text!!.trim()
+
+                        // Black check
+                        if (text.isEmpty()) {
+                            sendInvalidRequest(update, """
+                                Are you kidding me?
                             """.trimIndent())
-                                }
-                            } else {
-                                sendInvalidRequest(update, """
-                                Sorry, we couldn't find your GIF in our database!.Please try again.
+                            return@let
+                        }
+
+                        // Length check
+                        if (text.length > MAX_TEXT_LENGTH) {
+                            sendInvalidRequest(update, """
+                                Sorry, I can't handle more than $MAX_TEXT_LENGTH chars.
+                                May be you should <a href="https://github.com/theapache64/txtgifbot/issues/2"> vote for it</a>
                             """.trimIndent())
-                            }
-                        } else {
+                            return@let
+                        }
+
+                        // Multiline check
+                        if (text.contains("\n")) {
+                            sendInvalidRequest(update, """
+                                Sorry, I can't handle multiline.
+                                May be you should <a href="https://github.com/theapache64/txtgifbot/issues/1"> vote for it</a>
+                            """.trimIndent())
+                            return@let
+                        }
+
+                        println("It's the text to write on top of GIF : $text")
+
+                        val replyMsgId = update.message.replyToMessage!!.messageId
+                        val hit = hitsRepo.getByMessageId(replyMsgId)
+
+                        if (hit == null) {
                             sendInvalidRequest(update, """
                                 Sorry, we couldn't find your GIF in our database!.Please try again.
                             """.trimIndent())
+                            return@let
                         }
+
+                        val gifFile = telegramRepo.downloadGif(hit.fileId)
+
+                        if (gifFile == null) {
+                            sendInvalidRequest(update, """
+                                Sorry, we couldn't find your GIF in Telegram database.Please try again.
+                            """.trimIndent())
+                            return@let
+                        }
+
+
+                        val newMp4File = GifMaster.draw(text, hit.width, hit.height, gifFile, false)
+                        gifFile.delete()
+                        if (newMp4File == null) {
+                            sendInvalidRequest(update, """
+                                Sorry. We couldn't process that. 
+                                <a href="https://github.com/theapache64/txtgifbot/issues/new">Please report it here</a>
+                            """.trimIndent())
+                            return@let
+                        }
+                        println("output: file://${newMp4File.absolutePath}")
+
                     }
 
                     else -> {

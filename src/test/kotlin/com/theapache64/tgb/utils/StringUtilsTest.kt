@@ -1,5 +1,6 @@
 package com.theapache64.tgb.utils
 
+import com.theapache64.telegrambot.api.utils.StringUtils
 import com.winterbe.expekt.should
 import org.junit.Test
 

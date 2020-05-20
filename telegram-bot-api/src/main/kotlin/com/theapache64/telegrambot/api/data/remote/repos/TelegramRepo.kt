@@ -6,6 +6,7 @@ import com.theapache64.telegrambot.api.TelegramApi
 import com.theapache64.telegrambot.api.di.TelegramBotToken
 import com.theapache64.telegrambot.api.di.modules.NetworkModule
 import com.theapache64.telegrambot.api.models.*
+import com.theapache64.telegrambot.api.utils.StringUtils
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -90,7 +91,7 @@ class TelegramRepo @Inject constructor(
         if (fileInfo.ok) {
             val fileLink = "${NetworkModule.BASE_URL}file/bot$accessToken/${fileInfo.result.filePath}"
             println("File link is $fileLink")
-            val file = File("${fileId}_${fileInfo.result.filePath}")
+            val file = File("/tmp/${StringUtils.toFileName("${fileId}_${fileInfo.result.filePath}")}")
             URL(fileLink).openStream().copyTo(FileOutputStream(file))
             println("File downloaded: ${file.absolutePath}")
             return file

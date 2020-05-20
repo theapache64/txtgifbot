@@ -1,12 +1,15 @@
-package com.theapache64.tgb.utils
+package com.theapache64.tgb.core
 
+import com.theapache64.telegrambot.api.utils.StringUtils
+import com.theapache64.tgb.utils.SimpleCommandExecutor
 import java.io.File
 import kotlin.math.sqrt
 
-object FfmpegUtils {
+object GifMaster {
 
-    private const val fontPath = "assets/impact.ttf"
+    private const val fontPath = "src/main/resources/impact.ttf"
     private const val TEXT_SIZE = 50
+    private const val TEXT_LENGTH = 17
     private const val WIDTH = 480
     private const val HEIGHT = 376
     private val DIAGONAL = sqrt((WIDTH * WIDTH) + (HEIGHT * HEIGHT).toDouble())
@@ -20,7 +23,7 @@ object FfmpegUtils {
     ): File? {
 
         val outputFile = File("${gifFile.parent}/${StringUtils.toFileName("${text}_${gifFile.name}")}")
-        var textSize = (sqrt((width * width + height * height).toDouble()) / DIAGONAL * TEXT_SIZE).toInt()
+        val textSize = (sqrt((width * width + height * height).toDouble()) / DIAGONAL * TEXT_SIZE).toInt()
         val bottomMargin = height * 0.02
 
         require(textSize > 0) { "Text size can't be <= 0" }
@@ -47,7 +50,11 @@ object FfmpegUtils {
         )
 
         if (outputFile.exists() && isCreateGif) {
-            val gifCommand = """ffmpeg -y -i "${outputFile.absolutePath}" -filter_complex "[0:v] fps=12,scale=480:-2,split [a][b];[a] palettegen [p];[b][p] paletteuse" "${outputFile.absolutePath}.gif" """
+            val gifCommand = """
+                   ffmpeg -y -i "${outputFile.absolutePath}" -filter_complex "
+                       [0:v] fps=12,scale=480:-2,split [a][b];
+                       [a] palettegen [p];[b][p] paletteuse" "${outputFile.absolutePath}.gif"
+                """.trimIndent()
             SimpleCommandExecutor.executeCommand(
                     gifCommand,
                     isLivePrint = true,
