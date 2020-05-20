@@ -47,7 +47,7 @@ class TgbViewModel @Inject constructor(
                 // Valid update
                 when {
 
-                    update.message.animation != null -> {
+                    update.message.animation != null || update.message.video != null -> {
                         // It's a GIF
                         println("It's a GIF")
 
@@ -174,12 +174,12 @@ class TgbViewModel @Inject constructor(
             user = "Unknown"
         }
 
-        val gif = update.message.animation!!
+        val gif = (update.message.animation ?: update.message.video)!!
         val hit = Hit(
                 null,
                 user,
                 askMsg.result!!.messageId,
-                update.message.animation!!.fileId,
+                gif.fileId,
                 gif.width,
                 gif.height,
                 null,
@@ -198,7 +198,7 @@ class TgbViewModel @Inject constructor(
 
     private suspend fun sendInvalidRequest(
             update: Update,
-            message: String = "🤷‍♂️ What? I don't know about that. Send me a GIF!!!"
+            message: String = "🤷‍♂️ What? I don't know about that. <b>Send me a GIF!!!</b>"
     ) {
         telegramRepo.sendMessage(
                 SendMessageRequest(

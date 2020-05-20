@@ -10,7 +10,9 @@ data class Update(
 ) {
     data class Message(
             @Json(name = "animation")
-            val animation: Animation?,
+            val animation: VideoOrAnimation?,
+            @Json(name = "video")
+            val video: VideoOrAnimation?,
             @Json(name = "text")
             val text: String?,
             @Json(name = "reply_to_message")
@@ -36,6 +38,7 @@ data class Update(
                 @Json(name = "message_id")
                 val messageId: Long // 15
         ) {
+
             data class Animation(
                     @Json(name = "duration")
                     val duration: Int, // 2
@@ -95,7 +98,7 @@ data class Update(
             )
         }
 
-        data class Animation(
+        data class VideoOrAnimation(
                 @Json(name = "duration")
                 val duration: Int, // 2
                 @Json(name = "file_id")

@@ -6,7 +6,7 @@ import java.io.File
 
 object GifMaster {
 
-    private const val TEXT_SIZE = 40
+    private const val TEXT_SIZE = 45
 
     fun draw(
             text: String,
@@ -14,7 +14,7 @@ object GifMaster {
             isCreateGif: Boolean
     ): File? {
 
-        val outputFile = File("${gifFile.parent}/${StringUtils.toFileName("${text}_${gifFile.name}")}")
+        val outputFile = File("${gifFile.parent}/${StringUtils.toFileName("${text}_${gifFile.name}")}.mp4")
         val subTitleFile = createSubTitleFile(gifFile, text)
 
         val command = """

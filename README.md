@@ -2,9 +2,8 @@
 
 A Telegram bot to write text on top of GIFs
 
-## Status :construction:
+## Install
 
-Under active development
 
 ## Author :writing_hand:
 
