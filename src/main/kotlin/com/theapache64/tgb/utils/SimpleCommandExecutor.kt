@@ -9,7 +9,6 @@ import java.io.InputStreamReader
  */
 object SimpleCommandExecutor {
 
-
     @Throws(IOException::class)
     fun executeCommand(command: String): String = executeCommand(command, false)
 

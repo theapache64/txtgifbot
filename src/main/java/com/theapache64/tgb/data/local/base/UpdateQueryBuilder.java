@@ -8,9 +8,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by theapache64 on 30/10/17.
- */
 public class UpdateQueryBuilder {
 
     private final String tableName;
