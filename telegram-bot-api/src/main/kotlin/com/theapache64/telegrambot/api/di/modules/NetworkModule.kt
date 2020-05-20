@@ -19,18 +19,22 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(moshi: Moshi): Retrofit {
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .client(
-                        OkHttpClient.Builder()
-                                .connectTimeout(60, TimeUnit.SECONDS)
-                                .readTimeout(60, TimeUnit.SECONDS)
-                                .writeTimeout(60, TimeUnit.SECONDS)
-                                .followRedirects(true)
-                                .followSslRedirects(true)
-                                .build()
-                )
+                .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
     }

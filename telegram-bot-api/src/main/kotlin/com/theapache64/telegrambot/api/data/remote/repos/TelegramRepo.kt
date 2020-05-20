@@ -10,9 +10,6 @@ import com.theapache64.telegrambot.api.utils.StringUtils
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -99,10 +96,13 @@ class TelegramRepo @Inject constructor(
         if (fileInfo.ok) {
             val fileLink = "${NetworkModule.BASE_URL}file/bot$accessToken/${fileInfo.result.filePath}"
             println("File link is $fileLink")
-            val file = File("/tmp/${StringUtils.toFileName("${fileId}_${fileInfo.result.filePath}")}")
-            URL(fileLink).openStream().copyTo(FileOutputStream(file))
-            println("File downloaded: ${file.absolutePath}")
-            return file
+            val tempGif = File("/tmp/txtgifbot/${StringUtils.toFileName("${fileId}_${fileInfo.result.filePath}")}")
+            if (!tempGif.parentFile.exists()) {
+                tempGif.parentFile.mkdirs()
+            }
+            URL(fileLink).openStream().copyTo(FileOutputStream(tempGif))
+            println("File downloaded: ${tempGif.absolutePath} : ${tempGif.exists()}")
+            return tempGif
         }
         return null
     }

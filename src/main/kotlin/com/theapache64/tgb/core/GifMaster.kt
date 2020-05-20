@@ -6,7 +6,6 @@ import java.io.File
 
 object GifMaster {
 
-    private const val fontPath = "src/main/resources/impact.ttf"
     private const val TEXT_SIZE = 40
 
     fun draw(

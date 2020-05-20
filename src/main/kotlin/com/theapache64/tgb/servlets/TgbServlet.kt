@@ -19,7 +19,8 @@ class TgbServlet : HttpServlet() {
 
     override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) = runBlockingUnit {
 
-        try {
+        try
+        {
             DaggerTgbComponent.builder()
                     .telegramModule(TelegramModule(SecretConstants.TXT_GIF_BOT_TOKEN))
                     .build()

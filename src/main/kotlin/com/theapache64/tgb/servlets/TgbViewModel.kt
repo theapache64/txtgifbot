@@ -33,6 +33,7 @@ class TgbViewModel @Inject constructor(
     private var update: Update? = null
 
     fun init(jsonUpdate: String) {
+        println("JSON is $jsonUpdate")
         this.update = telegramRepo.parseUpdate(jsonUpdate)
         println("Servlet got hit from ${update?.message?.from?.firstName},${update?.message?.from?.username}")
     }
@@ -100,6 +101,7 @@ class TgbViewModel @Inject constructor(
 
                         val newMp4File = GifMaster.draw(text, gifFile, false)
                         gifFile.delete()
+
                         if (newMp4File == null) {
                             sendInvalidRequest(update, """
                                🤒 Sorry. We couldn't process that. 
