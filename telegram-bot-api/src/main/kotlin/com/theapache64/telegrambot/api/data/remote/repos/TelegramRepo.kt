@@ -23,8 +23,6 @@ class TelegramRepo @Inject constructor(
 ) {
     companion object {
         // Chat actions
-        const val CHAT_ACTION_TYPING = "typing"
-        const val CHAT_ACTION_SENDING_PHOTO = "upload_photo"
         const val CHAT_ACTION_SENDING_DOCUMENT = "upload_document"
     }
 
@@ -51,26 +49,6 @@ class TelegramRepo @Inject constructor(
         )
     }
 
-    suspend fun answerCallbackQuery(request: AnswerCallbackRequest): Any {
-        return telegramApi.answerCallbackQuery(
-                accessToken,
-                request
-        )
-    }
-
-    suspend fun sendPhotoFile(chatId: Long, file: File, caption: String): SendPhotoResponse {
-        val mediaType = MediaType.parse("multipart/form-data")
-        val requestFile = RequestBody.create(mediaType, file)
-        val photoPart = MultipartBody.Part.createFormData("photo", file.name, requestFile)
-        val chatIdPart = RequestBody.create(mediaType, chatId.toString())
-        val captionPart = RequestBody.create(mediaType, caption)
-        return telegramApi.sendPhotoFile(
-                accessToken,
-                chatIdPart,
-                captionPart,
-                photoPart
-        )
-    }
 
     suspend fun sendAnimation(chatId: Long, file: File): Any {
         val mediaType = MediaType.parse("multipart/form-data")
@@ -84,15 +62,10 @@ class TelegramRepo @Inject constructor(
         )
     }
 
-    suspend fun sendPhoto(request: SendPhotoRequest): SendPhotoResponse {
-        return telegramApi.sendPhoto(
-                accessToken,
-                request
-        )
-    }
-
     fun downloadGif(fileId: String): File? {
+
         val fileInfo = telegramApi.getFileInfo(accessToken, fileId).execute().body()!!
+
         if (fileInfo.ok) {
             val fileLink = "${NetworkModule.BASE_URL}file/bot$accessToken/${fileInfo.result.filePath}"
             println("File link is $fileLink")

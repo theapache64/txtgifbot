@@ -6,7 +6,6 @@ import com.theapache64.cyclone.core.livedata.MutableLiveData
 import com.theapache64.telegrambot.api.data.remote.repos.TelegramRepo
 import com.theapache64.telegrambot.api.models.SendChatActionRequest
 import com.theapache64.telegrambot.api.models.SendMessageRequest
-import com.theapache64.telegrambot.api.models.SendPhotoRequest
 import com.theapache64.telegrambot.api.models.Update
 import com.theapache64.tgb.data.local.HitsRepo
 import com.theapache64.tgb.models.Hit
