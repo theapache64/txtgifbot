@@ -47,6 +47,7 @@ class HitsRepo @Inject constructor() : BaseTable<Hit>("hits") {
     override fun update(t: Hit): Boolean {
         return UpdateQueryBuilder.Builder(tableName)
                 .set(COLUMN_TEXT, t.text)
+                .set(COLUMN_TRY_COUNT, t.tryCount.toString())
                 .set(COLUMN_IS_SUCCESS, t.isSuccess ?: false)
                 .where(COLUMN_ID, t.id.toString())
                 .build()
