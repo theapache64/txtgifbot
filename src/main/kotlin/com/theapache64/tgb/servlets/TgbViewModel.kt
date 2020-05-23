@@ -51,99 +51,46 @@ class TgbViewModel @Inject constructor(
                 when {
 
                     update.message.animation != null || update.message.video != null -> {
-                        // It's a GIF
-                        println("It's a GIF")
-
-                        // Send a reply action
                         askText(update)
                     }
 
-                    update.message.text != null && update.message.replyToMessage != null -> {
+                    update.message.text != null -> {
+                        // Checking if the text is reply to some GIF
+                        val replyAnimation = update.message.replyToMessage?.animation
+                                ?: update.message.replyToMessage?.video
 
-                        // It's the text to write on top of gif
                         val text = update.message.text!!.trim()
 
-                        // Blank check
-                        if (text.isEmpty()) {
-                            sendInvalidRequest(update, """
-                                🤨 Are you kidding me?
-                            """.trimIndent())
-                            return@let
-                        }
+                        if (replyAnimation != null) {
 
-                        println("It's the text to write on top of GIF : $text")
-
-                        val replyMsgId = update.message.replyToMessage!!.messageId
-                        var hit = hitsRepo.getByMessageId(replyMsgId)
-
-                        if (hit == null) {
-                            sendInvalidRequest(update, """
-                               🤒 Sorry, we couldn't find your GIF in our database!.Please try again.
-                            """.trimIndent())
-                            return@let
-                        }
-
-                        val chatId = update.message.chat.id
-                        val resp = telegramRepo.sendChatAction(SendChatActionRequest(
-                                TelegramRepo.CHAT_ACTION_SENDING_DOCUMENT,
-                                chatId
-                        ))
-
-                        println("Sending file sent! $resp")
-
-                        val gifFile = telegramRepo.downloadGif(hit.fileId)
-
-                        if (gifFile == null) {
-                            sendInvalidRequest(update, """
-                               🤒 Sorry, we couldn't find your GIF in Telegram database.Please try again.
-                            """.trimIndent())
-                            return@let
-                        }
-
-
-                        val newMp4File = GifMaster.draw(text, gifFile, false)
-                        gifFile.delete()
-
-                        if (newMp4File == null) {
-                            sendInvalidRequest(update, """
-                               🤒 Sorry. We couldn't process that. 
-                                <a href="https://github.com/theapache64/txtgifbot/issues/new">Please report it here</a>
-                            """.trimIndent())
-                            // Updating DB
-                            hit = hit.apply {
-                                this.text = text
-                                this.isSuccess = false
+                            // Text came as reply to GIF.
+                            val hit = hitsRepo.getByGifId(replyAnimation.fileUniqueId)
+                            if (hit == null) {
+                                sendInvalidRequest(update, "That gif doesn't exist in our server. Please send the GIF again")
+                                return@let
                             }
+
+                            sendGif(text, hit, update)
 
                         } else {
-                            println("output: file://${newMp4File.absolutePath}")
 
-                            // Updating DB
-                            hit = hit.apply {
-                                this.text = text
-                                this.isSuccess = true
+                            if (text.isNotEmpty()) {
+
+                                // gif or video
+                                val lastHit = hitsRepo.getLastHit(update.message.from.id)
+
+                                if (lastHit == null) {
+                                    sendInvalidRequest(update, "Send me a <b>GIF</b> first")
+                                    return@let
+                                }
+
+                                // Last gif available
+                                sendGif(text, lastHit, update)
+                            } else {
+                                sendInvalidRequest(update, "What should I do with blank text? 🤷 Send me some text")
                             }
-
-                            // Sending result
-                            val sendResult = telegramRepo.sendAnimation(
-                                    chatId,
-                                    newMp4File
-                            )
-
-                            // Statistics
-                            telegramRepo.sendAnimation(
-                                    SendAnimationRequest(
-                                            sendResult.result.document.fileId,
-                                            "@${hit.user} just created a GIF!",
-                                            SecretConstants.STATS_GROUP
-                                    )
-                            )
-
-                            newMp4File.delete()
                         }
 
-                        hitsRepo.update(hit)
-                        return@let
                     }
 
                     else -> {
@@ -161,21 +108,84 @@ class TgbViewModel @Inject constructor(
         return 0
     }
 
+    private suspend fun sendGif(text: String, _hit: Hit, update: Update) {
+
+        var hit = _hit
+
+        val chatId = update.message.chat.id
+        val resp = telegramRepo.sendChatAction(SendChatActionRequest(
+                TelegramRepo.CHAT_ACTION_SENDING_DOCUMENT,
+                chatId
+        ))
+
+        println("Sending file sent! $resp")
+
+        val gifFile = telegramRepo.downloadGif(hit.fileId)
+
+        if (gifFile == null) {
+            sendInvalidRequest(update, """
+                               🤒 Sorry, we couldn't find your GIF in Telegram database.Please try again.
+                            """.trimIndent())
+            return
+        }
+
+
+        val newMp4File = GifMaster.draw(text, gifFile, false)
+        gifFile.delete()
+
+        if (newMp4File == null) {
+            sendInvalidRequest(update, """
+                               🤒 Sorry. We couldn't process that. 
+                                <a href="https://github.com/theapache64/txtgifbot/issues/new">Please report it here</a>
+                            """.trimIndent())
+            // Updating DB
+            hit = hit.apply {
+                this.text = text
+                this.isSuccess = false
+                this.tryCount = this.tryCount + 1
+            }
+
+        } else {
+            println("output: file://${newMp4File.absolutePath}")
+
+            // Updating DB
+            hit = hit.apply {
+                this.text = text
+                this.isSuccess = true
+            }
+
+            // Sending result
+            val sendResult = telegramRepo.sendAnimation(
+                    chatId,
+                    newMp4File
+            )
+
+            // Statistics
+            telegramRepo.sendAnimation(
+                    SendAnimationRequest(
+                            sendResult.result.document.fileId,
+                            "@${hit.user} just created a GIF!",
+                            SecretConstants.STATS_GROUP
+                    )
+            )
+
+            newMp4File.delete()
+        }
+
+        hitsRepo.update(hit)
+    }
+
     private suspend fun askText(update: Update) {
 
-        println("Asking text...")
-        val askMsg = telegramRepo.sendMessage(
+        telegramRepo.sendMessage(
                 SendMessageRequest(
                         update.message.chat.id,
-                        "${getRandomGifComplement()}. Now tell me what do you want to write on it!",
-                        replyMsgId = update.message.messageId,
-                        replyMarkup = SendMessageRequest.ReplyMarkup(
-                                isForceReply = true
-                        )
+                        "${getRandomGifComplement()}. Now tell me what do you want to write on it!"
                 )
         )
 
         val from = update.message.from
+
         var user = if (from.username.isNullOrBlank()) {
             from.firstName
         } else {
@@ -190,10 +200,12 @@ class TgbViewModel @Inject constructor(
         val hit = Hit(
                 null,
                 user,
-                askMsg.result!!.messageId,
+                from.id,
+                gif.fileUniqueId,
                 gif.fileId,
                 gif.width,
                 gif.height,
+                0,
                 null,
                 null,
                 null,
