@@ -1,11 +1,4 @@
-ffmpeg -y -i bow.mp4 -vf "
-drawtext=
-  text=This is lengthy text and  more text:
-  fontcolor=white:
-  fontsize=20:
-  x=(w/2)-(tw/2):
-  y=h-th-10:
-  borderw=3:
-  bordercolor=black:
-  fontfile=impact.ttf
-  " output.mp4 && ffplay output.mp4
+ffmpeg -y -i "/home/theapache64/Documents/projects/txtgifbot/src/test/resources/bow.mp4" -vf "    
+    subtitles='/home/theapache64/Documents/projects/txtgifbot/src/test/resources/bow.srt':
+    force_style='Fontname=Impact,Fontsize=45,PrimaryColour=&Hffffff&,OutlineColour=&H000000&,BorderStyle=1,Outline=2'" \
+    "/home/theapache64/Documents/projects/txtgifbot/src/test/resources/A_B_C_bow.mp4.mp4"

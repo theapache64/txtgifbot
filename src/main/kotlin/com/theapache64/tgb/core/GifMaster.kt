@@ -54,11 +54,7 @@ object GifMaster {
     }
 
     private fun createSubTitleFile(input: File, text: String): File {
-        val content = """
-            1
-            00:00:00,000 --> 99:99:99,999
-            $text
-        """.trimIndent()
+        val content = "1\n00:00:00,000 --> 99:99:99,999\n$text"
         return File("${input.parent}/${input.nameWithoutExtension}.srt").apply {
             writeText(content)
         }
