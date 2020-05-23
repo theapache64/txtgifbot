@@ -154,7 +154,6 @@ class TgbViewModel @Inject constructor(
             hit = hit.apply {
                 this.text = text
                 this.isSuccess = false
-                this.tryCount = this.tryCount + 1
             }
 
         } else {
@@ -164,6 +163,7 @@ class TgbViewModel @Inject constructor(
             hit = hit.apply {
                 this.text = text
                 this.isSuccess = true
+                this.tryCount = this.tryCount + 1
             }
 
             // Sending result
