@@ -55,41 +55,53 @@ class TgbViewModel @Inject constructor(
                     }
 
                     update.message.text != null -> {
-                        // Checking if the text is reply to some GIF
-                        val replyAnimation = update.message.replyToMessage?.animation
-                                ?: update.message.replyToMessage?.video
 
                         val text = update.message.text!!.trim()
 
-                        if (replyAnimation != null) {
-
-                            // Text came as reply to GIF.
-                            val hit = hitsRepo.getByGifId(replyAnimation.fileUniqueId)
-                            if (hit == null) {
-                                sendInvalidRequest(update, "That gif doesn't exist in our server. Please send the GIF again")
-                                return@let
-                            }
-
-                            sendGif(text, hit, update)
-
+                        if (text == "/start") {
+                            telegramRepo.sendMessage(
+                                    SendMessageRequest(
+                                            update.message.chat.id,
+                                            "Okay, let's start. Send me a GIF"
+                                    )
+                            )
                         } else {
+                            // Checking if the text is reply to some GIF
+                            val replyAnimation = update.message.replyToMessage?.animation
+                                    ?: update.message.replyToMessage?.video
 
-                            if (text.isNotEmpty()) {
 
-                                // gif or video
-                                val lastHit = hitsRepo.getLastHit(update.message.from.id)
+                            if (replyAnimation != null) {
 
-                                if (lastHit == null) {
-                                    sendInvalidRequest(update, "Send me a <b>GIF</b> first")
+                                // Text came as reply to GIF.
+                                val hit = hitsRepo.getByGifId(replyAnimation.fileUniqueId)
+                                if (hit == null) {
+                                    sendInvalidRequest(update, "That gif doesn't exist in our server. Please send the GIF again")
                                     return@let
                                 }
 
-                                // Last gif available
-                                sendGif(text, lastHit, update)
+                                sendGif(text, hit, update)
+
                             } else {
-                                sendInvalidRequest(update, "What should I do with blank text? 🤷 Send me some text")
+
+                                if (text.isNotEmpty()) {
+
+                                    // gif or video
+                                    val lastHit = hitsRepo.getLastHit(update.message.from.id)
+
+                                    if (lastHit == null) {
+                                        sendInvalidRequest(update, "Send me a <b>GIF</b> first")
+                                        return@let
+                                    }
+
+                                    // Last gif available
+                                    sendGif(text, lastHit, update)
+                                } else {
+                                    sendInvalidRequest(update, "What should I do with blank text? 🤷 Send me some text")
+                                }
                             }
                         }
+
 
                     }
 
